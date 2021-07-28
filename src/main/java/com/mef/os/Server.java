@@ -8,5 +8,6 @@ public class Server
     {
         Javalin app = Javalin.create().start( 8080 );
         app.get( "/", ctx -> ctx.result( "Hello World" ) );
+        app.get( "/args", ctx -> ctx.result( args.length > 0 ? args[0] : "None" ) );
     }
 }
