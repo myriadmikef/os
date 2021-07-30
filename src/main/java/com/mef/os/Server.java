@@ -32,7 +32,7 @@ public class Server
             {
                 System.out.println( "App Config Dir " + appConfigDirectory );
                 File file = new File( appConfigDirectory, "db.properties" );
-                ctx.result( file.getAbsolutePath() );
+                ctx.result( file.getAbsolutePath() + " " + file.exists() + " " + file.canRead() );
             }
             else
             {
