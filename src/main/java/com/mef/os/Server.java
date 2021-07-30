@@ -14,5 +14,6 @@ public class Server
         app.get( "/cp", ctx -> ctx.result( System.getProperties().entrySet().stream()
             .map( e -> e.getKey() + "=" + e.getValue() + "\n" ).collect( Collectors.toList() ).toString() ) );
 
+        app.config.addStaticFiles( "/os" );
     }
 }
