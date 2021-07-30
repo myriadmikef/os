@@ -1,6 +1,6 @@
 package com.mef.os;
 
-import java.net.URL;
+import java.io.File;
 import java.util.stream.Collectors;
 
 import io.javalin.Javalin;
@@ -15,25 +15,29 @@ public class Server
         app.get( "/args", ctx -> ctx.result( args.length > 0 ? args[0] : "None" ) );
         app.get( "/cp", ctx -> ctx.result( System.getProperties().entrySet().stream()
             .map( e -> e.getKey() + "=" + e.getValue() + "\n" ).collect( Collectors.toList() ).toString() ) );
-        app.get( "/res", ctx -> Server.db( ctx ) );
+        app.get( "/res", ctx -> Server.res( ctx ) );
 
         app.config.addStaticFiles( "/os/web" );
 
         // /deployments/os.jar
     }
 
-    private static void db( Context ctx )
+    private static void res( Context ctx )
     {
         try
         {
             System.out.println( "Executing db" );
-            URL resource = Thread.currentThread().getContextClassLoader().getResource( "db.properties" );
-            if ( resource != null )
+            String appConfigDirectory = System.getenv( "APP_CONFIG_DIR" );
+            if ( appConfigDirectory != null )
             {
-                ctx.result( resource.toString() );
+                System.out.println( "App Config Dir " + appConfigDirectory );
+                File file = new File( appConfigDirectory, "db.properties" );
+                ctx.result( file.getAbsolutePath() );
             }
             else
+            {
                 ctx.result( "Resource not found" );
+            }
         } catch ( Exception ex )
         {
             ex.printStackTrace();
