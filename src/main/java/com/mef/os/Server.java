@@ -3,11 +3,16 @@ package com.mef.os;
 import java.io.File;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 public class Server
 {
+    private static final Logger logger = LoggerFactory.getLogger( Server.class );
+
     public static void main( String[] args )
     {
         Javalin app = Javalin.create().start( 8080 );
@@ -26,7 +31,9 @@ public class Server
     {
         try
         {
-            System.out.println( "Executing db" );
+            logger.info( "Hello World" );
+
+            System.out.println( "Executing res" );
             String appConfigDirectory = System.getenv( "APP_CONFIG_DIR" );
             if ( appConfigDirectory != null )
             {
