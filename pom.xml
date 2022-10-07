@@ -1,24 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mef.os</groupId>
 	<artifactId>os</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 
 	<dependencies>
 		<dependency>
@@ -33,50 +18,91 @@
 		</dependency>
 	</dependencies>
 
+
 	<profiles>
 		<profile>
-			<id>fat-jar</id>
+			<id>mmm</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<maven.compiler.source>1.8</maven.compiler.source>
+				<maven.compiler.target>1.8</maven.compiler.target>
+				<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				<env.config.dir>../../../env/config</env.config.dir>
+			</properties>
+			<repositories>
+				<repository>
+					<id>nexus-readonly</id>
+					<url>https://maven-secure.myriad.com/nexus/content/repositories/mmm</url>
+				</repository>
+				<repository>
+					<id>mmm-repo</id>
+					<url>file://///filer2/mmm_test/env/mmm-repo</url>
+				</repository>
+			</repositories>
+			<distributionManagement>
+				<repository>
+					<id>mmm-repo</id>
+					<url>file://///filer2/mmm_test/env/mmm-repo</url>
+				</repository>
+			</distributionManagement>
 			<build>
-				<finalName>os</finalName>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-shade-plugin</artifactId>
+						<groupId>pl.project13.maven</groupId>
+						<artifactId>git-commit-id-plugin</artifactId>
+						<version>4.9.10</version>
 						<executions>
 							<execution>
-								<phase>package</phase>
+								<id>get-the-git-infos</id>
 								<goals>
-									<goal>shade</goal>
+									<goal>revision</goal>
 								</goals>
-								<configuration>
-									<filters>
-										<filter>
-											<artifact>com.mef.os:os</artifact>
-											<excludes>
-												<exclude>os/config/**</exclude>
-											</excludes>
-										</filter>
-									</filters>
-								</configuration>
+								<phase>validate</phase>
 							</execution>
 						</executions>
+						<configuration>
+							<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.2.2</version>
 						<configuration>
 							<archive>
-								<manifest>
-									<mainClass>com.mef.os.Server</mainClass>
-								</manifest>
+								<manifestEntries>
+									<SCM-Revision>${git.commit.id.describe}</SCM-Revision>
+									<git-commit-id>${git.commit.id}</git-commit-id>
+									<git-branch>${git.branch}</git-branch>
+									<git-build-version>${git.build.version}</git-build-version>
+								</manifestEntries>
 							</archive>
+							<includes>
+								<include>myriad/**/*</include>
+								<include>com/myriad/**/*</include>
+							</includes>
 						</configuration>
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>github</id>
+			<repositories>
+				<repository>
+					<id>central</id>
+					<url>https://repo1.maven.org/maven2</url>
+				</repository>
+				<repository>
+					<id>github</id>
+					<url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
 		</profile>
 	</profiles>
 
